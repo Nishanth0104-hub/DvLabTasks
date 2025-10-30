@@ -1,0 +1,29 @@
+4.
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from pandas.plotting import parallel_coordinates
+
+df = pd.read_csv("indian_census.csv")
+# pick numeric columns
+num_cols = ['Population','LiteracyRate','Graduates','MalePopulation','FemalePopulation']
+sub = df[num_cols].dropna().sample(min(1000, len(df))) # sample for speed
+
+plt.figure(figsize=(8,6))
+sns.heatmap(sub.corr(), annot=True, fmt=".2f", cmap="vlag")
+plt.title("Correlation heatmap")
+plt.show()
+
+# Pairplot (might be slow on big data)
+sns.pairplot(sub.sample(500))
+plt.show()
+
+# Parallel coordinates: create a small categorical grouping e.g., top states vs others
+df2 = df[['State'] + num_cols].dropna()
+top_states = df2.groupby('State')['Population'].sum().nlargest(5).index.tolist()
+df2['Group'] = df2['State'].apply(lambda s: s if s in top_states else 'Other')
+sample = df2.groupby('Group').mean().reset_index()
+plt.figure(figsize=(10,5))
+parallel_coordinates(sample, 'Group', colormap='tab10')
+plt.title("Parallel coordinates (state groups)")
+plt.show()

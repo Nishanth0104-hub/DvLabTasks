@@ -1,0 +1,30 @@
+
+import pandas as pd
+import re
+import networkx as nx
+from collections import Counter
+from pyvis.network import Network
+from itertools import combinations
+
+df = pd.read_csv("indian_census.csv")
+texts = df['City'].astype(str).str.lower().tolist()  # replace with 'Description' if available
+
+# simple tokenization
+def tokenize(s):
+    return [w for w in re.findall(r'\b[a-z]{2,}\b', s)]
+
+# Build co-occurrence pairs per city name (words appearing in same city name)
+pairs = []
+for t in texts:
+    toks = list(set(tokenize(t)))
+    for a,b in combinations(toks,2):
+        pairs.append((a,b))
+
+edge_counts = Counter(pairs)
+G = nx.Graph()
+for (a,b),cnt in edge_counts.items():
+    G.add_edge(a,b, weight=cnt)
+
+net = Network(notebook=False, height="600px", width="100%")
+net.from_nx(G)
+net.show("city_word_cooccurrence.html")

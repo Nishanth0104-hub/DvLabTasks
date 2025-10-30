@@ -1,0 +1,32 @@
+3A.
+# file: 3biv_cont_cont.py
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("indian_census.csv")
+x_col = "LiteracyRate"
+y_col = "Population"
+
+plt.figure(figsize=(7,5))
+sns.scatterplot(data=df, x=x_col, y=y_col)
+sns.regplot(data=df, x=x_col, y=y_col, scatter=False, lowess=True, label='trend')
+plt.title(f'{y_col} vs {x_col}')
+plt.legend()
+plt.show()
+
+3B.
+# file: 3biv_cont_cat.py
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+emp = pd.read_csv("employee_data.csv")
+num = "Salary"
+cat = "Department"
+
+plt.figure(figsize=(10,5))
+sns.boxplot(data=emp, x=cat, y=num)
+sns.stripplot(data=emp, x=cat, y=num, color='black', alpha=0.3, jitter=True)
+plt.title(f'{num} distribution by {cat}')
+plt.show()

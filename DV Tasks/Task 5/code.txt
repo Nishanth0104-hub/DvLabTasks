@@ -1,0 +1,24 @@
+import pandas as pd
+import plotly.express as px
+
+df = pd.read_csv("indian_census.csv")
+# Ensure there are columns: State, City, Population, LiteracyRate, Graduates
+# Treemap: State -> City sized by Population
+fig = px.treemap(df, path=['State','City'], values='Population',
+                 title='Treemap: Population by State and City')
+fig.show()
+
+# Sunburst: use aggregation — we'll show State -> City, but user asked top 5 cities by population,literacy,graduates by state
+# Prepare aggregated top5 per state for three measures
+def top_n_by(group, measure, n=5):
+    return group.nlargest(n, measure)[['State','City',measure]]
+
+# Example: build a sunburst for top 5 cities by Population across states
+top_pop = df.groupby('State').apply(lambda g: g.nlargest(5,'Population')).reset_index(drop=True)
+fig2 = px.sunburst(top_pop, path=['State','City'], values='Population', title='Sunburst: Top 5 Cities by Population per State')
+fig2.show()
+
+# For literacy and graduates you can build similar sunbursts:
+top_lit = df.groupby('State').apply(lambda g: g.nlargest(5,'LiteracyRate')).reset_index(drop=True)
+fig3 = px.sunburst(top_lit, path=['State','City'], values='LiteracyRate', title='Sunburst: Top 5 Cities by LiteracyRate per State')
+fig3.show()

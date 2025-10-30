@@ -1,0 +1,22 @@
+
+import pandas as pd
+import folium
+from folium.plugins import MarkerCluster, HeatMap
+
+eq = pd.read_csv("earthquakes.csv")  # columns: Latitude, Longitude, Magnitude, Time
+
+m = folium.Map(location=[20,78], zoom_start=5)
+mc = MarkerCluster().add_to(m)
+
+for _, r in eq.iterrows():
+    popup = f"Magnitude: {r['Magnitude']}<br>Depth: {r.get('Depth','N/A')}<br>Time: {r.get('Time','')}"
+    folium.CircleMarker(location=[r['Latitude'], r['Longitude']],
+                        radius=2 + float(r['Magnitude']),
+                        color=None, fill=True, fill_opacity=0.6,
+                        popup=popup).add_to(mc)
+
+# Heatmap (magnitude weighted)
+heat = [[r['Latitude'], r['Longitude'], r['Magnitude']] for _,r in eq.iterrows()]
+HeatMap(heat, radius=10).add_to(m)
+
+m.save("earthquake_map.html")

@@ -1,0 +1,40 @@
+2A.
+# file: 2_univariate_continuous.py
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+census = pd.read_csv("indian_census.csv")
+# Example continuous columns: Population, LiteracyRate, Graduates
+num_col = "Population"  # change as required
+
+plt.figure(figsize=(10,4))
+plt.subplot(1,2,1)
+sns.histplot(census[num_col].dropna(), kde=True)
+plt.title(f'Histogram + KDE: {num_col}')
+
+plt.subplot(1,2,2)
+sns.boxplot(x=census[num_col].dropna())
+plt.title(f'Boxplot: {num_col}')
+plt.tight_layout()
+plt.show()
+
+2B.
+# file: 2_univariate_categorical.py
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+emp = pd.read_csv("employee_data.csv")
+cat_col = "Department"
+
+plt.figure(figsize=(8,4))
+sns.countplot(data=emp, y=cat_col, order=emp[cat_col].value_counts().index)
+plt.title(f'Counts by {cat_col}')
+plt.show()
+
+# Pie chart:
+emp[cat_col].value_counts().plot.pie(autopct='%1.1f%%', figsize=(6,6))
+plt.title(f'{cat_col} distribution')
+plt.ylabel('')
+plt.show()

@@ -1,0 +1,26 @@
+
+import pandas as pd
+import folium
+from folium.plugins import HeatMap
+
+df = pd.read_csv("indian_census.csv")
+# Ensure Latitude and Longitude columns exist
+df = df.dropna(subset=['Latitude','Longitude'])
+
+# Simple folium map
+m = folium.Map(location=[20.5937,78.9629], zoom_start=5)  # center India
+
+# Add circle markers sized by population
+for _, row in df.iterrows():
+    folium.CircleMarker(
+        location=[row['Latitude'], row['Longitude']],
+        radius=max(2, (row['Population'] / df['Population'].max()) * 15),
+        popup=f"{row['City']}, {row['State']}\nPop: {row['Population']}",
+        fill=True
+    ).add_to(m)
+
+# Heatmap of population
+heat_data = df[['Latitude','Longitude','Population']].values.tolist()
+HeatMap(heat_data, radius=15).add_to(m)
+
+m.save("india_census_map.html")

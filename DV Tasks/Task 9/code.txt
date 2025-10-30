@@ -1,0 +1,20 @@
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.read_csv("indian_census.csv")
+# Assume we have Year column and aggregated population per year
+ts = df.groupby('Year')['Population'].sum().reset_index()
+ts['Year'] = pd.to_datetime(ts['Year'], format='%Y')  # if Year like 2011
+
+plt.figure(figsize=(10,4))
+sns.lineplot(data=ts, x='Year', y='Population', marker='o')
+plt.title('Population over Years (Total)')
+plt.show()
+
+# Seasonality/resampling example if monthly data present:
+# df['Date'] = pd.to_datetime(df['Date'])
+# monthly = df.set_index('Date').resample('M')['Population'].sum()
+# monthly.plot()
+# plt.show()

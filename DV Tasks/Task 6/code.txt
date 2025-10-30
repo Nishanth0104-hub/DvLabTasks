@@ -1,0 +1,26 @@
+
+import pandas as pd
+import networkx as nx
+from pyvis.network import Network
+from sklearn.metrics.pairwise import cosine_similarity
+
+df = pd.read_csv("indian_census.csv")
+# Aggregate numeric features by State
+features = df.groupby('State')[['Population','LiteracyRate','Graduates']].mean().fillna(0)
+states = features.index.tolist()
+sim = cosine_similarity(features.values)
+
+# Build graph using a threshold
+G = nx.Graph()
+for i,s in enumerate(states):
+    G.add_node(s, size=float(features.iloc[i]['Population'])**0.3)
+
+threshold = 0.95
+for i in range(len(states)):
+    for j in range(i+1,len(states)):
+        if sim[i,j] >= threshold:
+            G.add_edge(states[i], states[j], weight=float(sim[i,j]))
+
+net = Network(height="800px", width="100%", notebook=False)
+net.from_nx(G)
+net.show("state_similarity_network.html")
